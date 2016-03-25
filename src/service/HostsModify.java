@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
+ * This class is used to modify the hosts file
  * Created by padeoe on 2016/3/18.
  */
 public class HostsModify {

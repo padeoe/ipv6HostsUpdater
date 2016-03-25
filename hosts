@@ -17395,8 +17395,8 @@
 2001:da8:112::21ae facebook.com
 2a03:2880:f002:109:face:b00c::2 www.facebook.com
 2a03:2880:f002:109:face:b00c::2 edge-chat.facebook.com
-2a03:2880:f002:109:face:b00c::2 0-edge-chat.facebook.com
-2a03:2880:f002:109:face:b00c::2 1-edge-chat.facebook.com
+2a03:2880:2040:7f01:face:b00c::1 0-edge-chat.facebook.com
+2a03:2880:2040:7f01:face:b00c::1 1-edge-chat.facebook.com
 2a03:2880:f002:109:face:b00c::2 2-edge-chat.facebook.com
 2a03:2880:f002:109:face:b00c::2 3-edge-chat.facebook.com
 2a03:2880:f002:109:face:b00c::2 4-edge-chat.facebook.com

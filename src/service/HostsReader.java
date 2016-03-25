@@ -5,18 +5,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * This class is used to read the "hosts" file
  * Created by padeoe on 2016/3/18.
  */
 public class HostsReader {
     private String hostsPath;
 
+    /**
+     *
+     * @param hostsPath "hosts" file path,usually it's
+     *                  "C:\Windows\System32\drivers\etc\hosts" in Windows,"/etc/hosts"in Linux,
+     *                  of course you can use the path of a hosts path just for testing
+     */
     public HostsReader(String hostsPath) {
         this.hostsPath = hostsPath;
     }
 
     /**
-     * 获取hosts中的条目
-     * @return
+     * read the hosts file into {@link HostsItem} list,it will drop comments and invalid items
+     * @return contains all valid hostitem from the hosts file in {@code hostPath}
      */
     public List<HostsItem> getHostsContent(){
         ArrayList<HostsItem> hostsItemArrayList=new ArrayList<>();
@@ -47,6 +54,12 @@ public class HostsReader {
         }
     }
 
+    /**
+     * analyse the line in hosts file by dropping comments,split ip and hostsname
+     * and construct into an {@linkplain HostsItem} Object
+     * @param hostsLine a single line in hosts file
+     * @return
+     */
     private static HostsItem getHostItem(String hostsLine){
         hostsLine=hostsLine.trim();
         int indexOfComment=hostsLine.indexOf("#");

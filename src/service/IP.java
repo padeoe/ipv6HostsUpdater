@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.net.*;
 
 /**
+ * This class represents the ip address,includes {@link Inet4Address}
+ * and {@link Inet6Address}.it offers methods to get the next and the previous
+ * ip address of current ip,and test whether the ip is reachable,the text format of the ip
  * Created by padeoe on 2016/3/18.
  */
 public class IP {
@@ -35,6 +38,11 @@ public class IP {
         System.out.println(Character.digit('f',16));*/
     }
 
+    /**
+     * get the next ip,for example the next ip,
+     * of 127.0.0.1 is 127.0.0.2
+     * @return
+     */
     public IP next() {
         byte[] result =address ;boolean needNext = true;int currentResult;int i;
         for (i = result.length - 1; i >= 0 && needNext; i--) {
@@ -49,6 +57,11 @@ public class IP {
         return new IP(result);
     }
 
+    /**
+     * get the next ip,for example the next ip,
+     * of 127.0.0.2 is 127.0.0.1
+     * @return
+     */
     public IP previous(){
         byte[] result =address ;boolean needNext = true;int currentResult;int i;
         for (i = result.length - 1; i >= 0 && needNext; i--) {
@@ -63,6 +76,10 @@ public class IP {
         return new IP(result);
     }
 
+    /**
+     * get the standard text format of the ip address
+     * @return
+     */
     public String toString(){
         if(address.length==4){
             StringBuilder builder=new StringBuilder();

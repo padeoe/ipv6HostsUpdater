@@ -6,6 +6,13 @@ import java.util.List;
 import java.util.Scanner;
 
 /**
+ * This class represents the line in the "hosts"file,which is stored in
+ * "C:\Windows\System32\drivers\etc\hosts" in Windows,"/etc/hosts"in Linux
+ * HostsItem is made up of two parts,which are ip address and hostname.
+ *
+ * This class includes methods to update the ip address for its hostname
+ * in two ways:search near ip of original ip or resolve the hostname by DNS
+ *
  * Created by padeoe on 2016/3/18.
  */
 public class HostsItem {
@@ -37,6 +44,12 @@ public class HostsItem {
         return ip + " " + domain;
     }
 
+    /**
+     * use DNSServer to resolve the hostname
+     * @param host hostname
+     * @param DNSServer DNS server address
+     * @return
+     */
     public static String DNS(String host, String DNSServer) {
         Runtime runtime = Runtime.getRuntime();
         String[] arg = new String[]{"nslookup", "-qt=AAAA", host, DNSServer};
@@ -69,6 +82,12 @@ public class HostsItem {
         }
     }
 
+    /**
+     * update the ip address of the Hostname by resolve the hostname afresh,if the ip from dns server
+     * is not reachable,it will ues  {@link #findNearIP()} to test it
+     * @param DNSServer DNS server address
+     * @return status code of whether DNS can return reachable ip,1 for success,0 for failure
+     */
     public int reDNS(String DNSServer) {
         String newip = DNS(domain, DNSServer);
         if (newip != null) {
@@ -82,6 +101,13 @@ public class HostsItem {
         }
     }
 
+    /**
+     * Usually,the next or the previous ip of the ip address in the
+     * HostItem can also be used in "host" file.For this reason we
+     * can create the method to find available ip for the hostname
+     * quickly.in default,it will move forward and afterwards util six
+     * @return whether we can find the reachable ip
+     */
     public boolean findNearIP() {
         IP nextip = new IP(ip);
         for (int n = 0; n < 6; n++) {
@@ -104,6 +130,16 @@ public class HostsItem {
         return false;
     }
 
+    /**
+     * update the ip address for the hostname
+     * if the ip is reachable,it will do nothing,
+     * or it will call function {@link #findNearIP()} and {@link #reDNS(String) ()} in order
+     * to find reachable ip
+     * @param port the port used to test whether the ip is reachable
+     * @param timeout max connect time to test whether the ip is reachable
+     * @param DNSServer DNS server address when need DNS
+     * @return
+     */
     public int update(int port,int timeout,String DNSServer) {
         if (!new IP(ip).isReachable(port, timeout)) {
             if (!findNearIP()) {
