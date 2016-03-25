@@ -49,6 +49,20 @@ public class IP {
         return new IP(result);
     }
 
+    public IP previous(){
+        byte[] result =address ;boolean needNext = true;int currentResult;int i;
+        for (i = result.length - 1; i >= 0 && needNext; i--) {
+            currentResult = result[i] - 1;
+            result[i] = (byte) currentResult;
+            needNext = currentResult == -1;
+        }
+        if (i == -1 && needNext) {
+            System.out.println("溢出");
+            return null;
+        }
+        return new IP(result);
+    }
+
     public String toString(){
         if(address.length==4){
             StringBuilder builder=new StringBuilder();

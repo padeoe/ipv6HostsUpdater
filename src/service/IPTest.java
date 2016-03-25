@@ -7,8 +7,10 @@ import java.util.List;
  * Created by padeoe on 2016/3/18.
  */
 public class IPTest {
+    static String DNSServer="2001:4860:4860::8888";
+    static int port=443;
+    static int timeout=500;
     static int n = 0;
-    static int current = 0;
     static int fixed=0;
     static int problem=0;
     public static void testAllIP(){
@@ -24,15 +26,25 @@ public class IPTest {
                     int id = hostList.size()-a;
                     for (int j = 1; id > 0; j++) {
                         try {
-                            String availableIP;
-                            if((availableIP=testArroundIP(hostList.get(id-1).getIp()))!=null){
-                                hostList.get(id-1).setIp(availableIP);
+                            switch (hostList.get(id-1).update(port,timeout,DNSServer)){
+                                case -1:
+                                    hostList.remove(id-1);
+                                    break;
+                                case 0:
+                                    System.out.println("失败"+hostList.get(id-1).getDomain());
+                                    problem++;
+                                    break;
+                                case 100:
+                                    fixed++;
+                                    break;
+                                case 200:
+                                    ;
+                                    default:break;
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         n++;
-                      //  System.out.println(id);
                         id = hostList.size() - threadnumber * j - a;
                     }
 
@@ -72,21 +84,27 @@ public class IPTest {
 
     }
 
-    public static String testArroundIP(String needTestIP){
-        IP ip=new IP(needTestIP);
-        if(!ip.isReachable(80,500)){
-            IP testip;
-            for(int n=0;n<6;n++){
-                if((testip=ip.next()).isReachable(80,500)){
-                    System.out.println(needTestIP+" =>"+testip.toString());
-                    fixed++;
-                    return testip.toString();
-                }
-            }
-            System.out.println(needTestIP);
-            problem++;
-            return null;
-        }
-        return null;
+    public static String getDNSServer() {
+        return DNSServer;
+    }
+
+    public static void setDNSServer(String DNSServer) {
+        IPTest.DNSServer = DNSServer;
+    }
+
+    public static int getPort() {
+        return port;
+    }
+
+    public static void setPort(int port) {
+        IPTest.port = port;
+    }
+
+    public static int getTimeout() {
+        return timeout;
+    }
+
+    public static void setTimeout(int timeout) {
+        IPTest.timeout = timeout;
     }
 }
