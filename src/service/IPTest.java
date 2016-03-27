@@ -9,15 +9,18 @@ import java.util.List;
 public class IPTest {
     static String DNSServer="2001:4860:4860::8888";
     static int port=443;
-    static int timeout=500;
+    static int timeout=800;
+    /** the thread number should not be too large,or the server will deny the connection! */
+    static int threadNumber=16;
     static int n = 0;
     static int fixed=0;
     static int problem=0;
+
     public static void testAllIP(){
         HostsReader hostsReader=new HostsReader("C:\\Windows\\System32\\drivers\\etc\\hosts");
         List<HostsItem> hostList= hostsReader.getHostsContent();
         ArrayList<Thread> threadArrayList=new ArrayList<>();
-        final int threadnumber = 200;
+        final int threadnumber = threadNumber;
         for (int i = 0; i < threadnumber; i++) {
             final int a = i;
             threadArrayList.add(new Thread() {
@@ -31,7 +34,7 @@ public class IPTest {
                                     hostList.remove(id-1);
                                     break;
                                 case 0:
-                                    System.out.println("失败"+hostList.get(id-1).getDomain());
+                                    System.out.println("fail "+hostList.get(id-1).getDomain());
                                     problem++;
                                     break;
                                 case 100:
@@ -62,7 +65,7 @@ public class IPTest {
                 e.printStackTrace();
             }
         }
-        System.out.println("所有线程已执行完毕.修复了:"+fixed+"无法修复："+problem);
+        System.out.println("All threads complete! "+fixed+" updated,"+problem+" fail");
         new HostsModify("hosts").writeHostsFile(hostList);
 
 /*        new Thread() {
@@ -106,5 +109,13 @@ public class IPTest {
 
     public static void setTimeout(int timeout) {
         IPTest.timeout = timeout;
+    }
+
+    public static int getThreadNumber() {
+        return threadNumber;
+    }
+
+    public static void setThreadNumber(int threadNumber) {
+        IPTest.threadNumber = threadNumber;
     }
 }

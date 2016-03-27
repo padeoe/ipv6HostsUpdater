@@ -18,6 +18,15 @@ public class HostsModify {
 
     public void writeHostsFile(List<HostsItem> hostsList){
         StringBuilder hostBuilder=new StringBuilder();
+        hostBuilder.append("#+=======================================================+");
+        hostBuilder.append(System.getProperty("line.separator"));
+        hostBuilder.append("#+                Author: padeoe@gmail.com               +");
+        hostBuilder.append(System.getProperty("line.separator"));
+        hostBuilder.append("#+  Project: https://github.com/padeoe/ipv6HostsUpdater  +");
+        hostBuilder.append(System.getProperty("line.separator"));
+        hostBuilder.append("#+=======================================================+");
+        hostBuilder.append(System.getProperty("line.separator"));
+
         for(HostsItem hostsItem:hostsList){
             hostBuilder.append(hostsItem.getIp());
             hostBuilder.append(' ');

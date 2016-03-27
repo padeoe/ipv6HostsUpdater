@@ -84,20 +84,21 @@ public class HostsItem {
 
     /**
      * update the ip address of the Hostname by resolve the hostname afresh,if the ip from dns server
-     * is not reachable,it will ues  {@link #findNearIP()} to test it
+     * is not reachable,it will ues  {@link #findNearIP(int, int)} to test it
      * @param DNSServer DNS server address
-     * @return status code of whether DNS can return reachable ip,1 for success,0 for failure
+     * @return status code of whether DNS can return reachable ip,1 for success,0 for failure,-1 for non-existent domain
      */
-    public int reDNS(String DNSServer) {
+    public int reDNS(String DNSServer,int port,int timeout) {
         String newip = DNS(domain, DNSServer);
         if (newip != null) {
-            ip = newip;
-            if (new IP(newip).isReachable(80, 500))
-                return 1;//解析成功
-            return findNearIP() ? 1 : 0;//0表示失败
+            if (new IP(newip).isReachable(port, timeout)){
+                ip = newip;
+                return 1;//1 for success
+            }
+            return findNearIP(port,timeout) ? 1 : 0;//0 for failure
         } else {
             //   System.out.println("没有解析出"+domain);
-            return -1;//域名无效
+            return -1;//-1 for non-existent domain
         }
     }
 
@@ -108,10 +109,10 @@ public class HostsItem {
      * quickly.in default,it will move forward and afterwards util six
      * @return whether we can find the reachable ip
      */
-    public boolean findNearIP() {
+    public boolean findNearIP(int port,int timeout) {
         IP nextip = new IP(ip);
         for (int n = 0; n < 6; n++) {
-            if ((nextip = nextip.next()).isReachable(80, 500)) {
+            if ((nextip = nextip.next()).isReachable(port, timeout)) {
                 System.out.println(new IP(ip) + " =>" + nextip.toString());
                 ip = nextip.toString();
                 return true;
@@ -120,7 +121,7 @@ public class HostsItem {
 
         IP previousip = new IP(ip);
         for (int n = 0; n < 6; n++) {
-            if ((previousip = previousip.previous()).isReachable(80, 500)) {
+            if ((previousip = previousip.previous()).isReachable(port, timeout)) {
                 System.out.println(new IP(ip) + " =>" + previousip.toString());
                 ip = previousip.toString();
                 return true;
@@ -133,7 +134,7 @@ public class HostsItem {
     /**
      * update the ip address for the hostname
      * if the ip is reachable,it will do nothing,
-     * or it will call function {@link #findNearIP()} and {@link #reDNS(String) ()} in order
+     * or it will call function {@link #findNearIP(int, int)} )} and {@link #reDNS(String, int, int)} in order
      * to find reachable ip
      * @param port the port used to test whether the ip is reachable
      * @param timeout max connect time to test whether the ip is reachable
@@ -142,11 +143,11 @@ public class HostsItem {
      */
     public int update(int port,int timeout,String DNSServer) {
         if (!new IP(ip).isReachable(port, timeout)) {
-            if (!findNearIP()) {
-                return reDNS(DNSServer);
+            if (!findNearIP(port,timeout)) {
+                return reDNS(DNSServer,port,timeout);
             }
-            return 100;//寻找附近ip成功
+            return 100;//success
         } else
-            return 200;//ip自身可用
+            return 200;//the ip is reachable originally
     }
 }

@@ -43,12 +43,10 @@ public class HostsReader {
                 }
                 return hostsItemArrayList;
             } catch (IOException e) {
-                System.out.println("文件读取时发生异常");
                 e.printStackTrace();
                 return null;
             }
         } catch (FileNotFoundException e) {
-            System.out.println("未找到hosts文件."+"path:"+hostsPath);
             e.printStackTrace();
             return null;
         }
@@ -63,11 +61,11 @@ public class HostsReader {
     private static HostsItem getHostItem(String hostsLine){
         hostsLine=hostsLine.trim();
         int indexOfComment=hostsLine.indexOf("#");
-        //整行只有注释
+        //just comments
         if(indexOfComment==0){
             return null;
         }
-        //如果存在注释，则去除注释
+        //contains comments
         if(indexOfComment!=-1){
             hostsLine=hostsLine.substring(0,indexOfComment);
         }

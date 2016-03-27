@@ -51,7 +51,7 @@ public class IP {
             needNext = currentResult == 0;
         }
         if (i == -1 && needNext) {
-            System.out.println("溢出");
+            System.out.println("overflow");
             return null;
         }
         return new IP(result);
@@ -70,7 +70,7 @@ public class IP {
             needNext = currentResult == -1;
         }
         if (i == -1 && needNext) {
-            System.out.println("溢出");
+            System.out.println("overflow");
             return null;
         }
         return new IP(result);
