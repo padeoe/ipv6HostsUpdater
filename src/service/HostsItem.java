@@ -57,7 +57,7 @@ public class HostsItem {
         try {
             process = runtime.exec(arg);
             InputStream is = process.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is, "GBK");
+            InputStreamReader isr = new InputStreamReader(is, "UTF-8");
             BufferedReader bf = new BufferedReader(isr);
             String line;
             String resolvedIP = null;
@@ -70,7 +70,7 @@ public class HostsItem {
                     } else
                         break;
                 } else {
-                    if (line.startsWith("名称")) {
+                    if (line.startsWith("Name")) {
                         ipStart = true;
                     }
                 }
