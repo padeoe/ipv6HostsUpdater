@@ -1,72 +1,95 @@
 package service;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by padeoe on 2016/3/18.
  */
 public class IPTest {
-    static String DNSServer="2001:4860:4860::8888";
-    static int port=443;
-    static int timeout=800;
-    /** the thread number should not be too large,or the server will deny the connection! */
-    static int threadNumber=16;
+    static String DNSServer = "2001:4860:4860::8888";
+    static int port = 443;
+    static int timeout = 800;
+    static int threadNumber = 100;
     static int n = 0;
-    static int fixed=0;
-    static int problem=0;
+    static int fixed = 0;
+    static int problem = 0;
+    static int deleted=0;
 
-    public static void testAllIP(){
-        HostsReader hostsReader=new HostsReader("C:\\Windows\\System32\\drivers\\etc\\hosts");
-        List<HostsItem> hostList= hostsReader.getHostsContent();
-        ArrayList<Thread> threadArrayList=new ArrayList<>();
+    public static void testAllIP() {
+        HostsReader hostsReader = new HostsReader("C:\\Windows\\System32\\drivers\\etc\\hosts");
+        HostsMap hostsMap = hostsReader.getHostsMap();
+        Map<String, String> domainMap = hostsReader.getDomainMap();
+        ArrayList<HostsItem> hostsItems = hostsReader.getHostsItemArrayList();
+
+        String[] ipArray = hostsMap.IPArray();
+
+        ArrayList<Thread> threadArrayList = new ArrayList<>();
         final int threadnumber = threadNumber;
         for (int i = 0; i < threadnumber; i++) {
             final int a = i;
             threadArrayList.add(new Thread() {
                 @Override
                 public void run() {
-                    int id = hostList.size()-a;
+                    int id = ipArray.length - a;
                     for (int j = 1; id > 0; j++) {
                         try {
-                            switch (hostList.get(id-1).update(port,timeout,DNSServer)){
-                                case -1:
-                                    hostList.remove(id-1);
-                                    break;
-                                case 0:
-                                    System.out.println("fail "+hostList.get(id-1).getDomain());
-                                    problem++;
-                                    break;
-                                case 100:
+                            String testip = ipArray[id - 1];
+                            if (!IP.isReachable(testip, port, timeout)) {
+                                IP currentIP = new IP(testip);
+                                if (!currentIP.findNearIP(port, timeout)) {
+                                    ArrayList<String> hostNameList = hostsMap.getHostName(testip);
+                                    for (String domain : hostNameList) {
+                                        HostsItem hostsItem = new HostsItem(null, domain);
+                                        switch (hostsItem.reDNS(DNSServer, port, timeout)) {
+                                            case -1:
+                                                domainMap.remove(domain);
+                                                System.out.println("Non-existent domain: " + domain);
+                                                deleted++;
+                                                break;
+                                            case 0:
+                                                System.out.println("fail: " + domain);
+                                                problem++;
+                                                break;
+                                            case 1:
+                                                domainMap.put(domain, currentIP.toString());
+                                                fixed++;
+                                                break;
+                                        }
+                                    }
+                                } else {
                                     fixed++;
-                                    break;
-                                case 200:
-                                    ;
-                                    default:break;
+                                    ArrayList<String> hostNameList = hostsMap.getHostName(testip);
+                                    for (String hostname : hostNameList) {
+                                        domainMap.put(hostname, currentIP.toString());
+                                    }
+
+                                }
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         n++;
-                        id = hostList.size() - threadnumber * j - a;
+                        id = ipArray.length - threadnumber * j - a;
                     }
 
                 }
             });
         }
 
-        for(Thread thread:threadArrayList){
+        for (Thread thread : threadArrayList) {
             thread.start();
         }
-        for(Thread thread:threadArrayList){
+        for (Thread thread : threadArrayList) {
             try {
                 thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
-        System.out.println("All threads complete! "+fixed+" updated,"+problem+" fail");
-        new HostsModify("hosts").writeHostsFile(hostList);
+        System.out.println("All threads complete! " + fixed + " updated," + problem + " fail,"+deleted+" deleted");
+
+        hostsItems.forEach(hostsItem -> hostsItem.setIp(domainMap.get(hostsItem.getDomain())));
+        new HostsModify("hosts").writeHostsFile(hostsItems);
 
 /*        new Thread() {
             @Override
@@ -82,7 +105,6 @@ public class IPTest {
                 }
             }
         }.start();*/
-
 
 
     }

@@ -2,13 +2,17 @@ package service;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class is used to read the "hosts" file
  * Created by padeoe on 2016/3/18.
  */
 public class HostsReader {
+    private HostsMap hostsMap=new HostsMap();
+    private Map<String,String> domainMap=new HashMap<>();
+    private ArrayList<HostsItem> hostsItemArrayList=new ArrayList<>();
     private String hostsPath;
 
     /**
@@ -19,14 +23,14 @@ public class HostsReader {
      */
     public HostsReader(String hostsPath) {
         this.hostsPath = hostsPath;
+        init();
     }
 
     /**
-     * read the hosts file into {@link HostsItem} list,it will drop comments and invalid items
-     * @return contains all valid hostitem from the hosts file in {@code hostPath}
+     * read the hosts file into three ADT,it will drop comments and invalid items
+     *
      */
-    public List<HostsItem> getHostsContent(){
-        ArrayList<HostsItem> hostsItemArrayList=new ArrayList<>();
+    private void init(){
         File hostsFile=new File(hostsPath);
         FileReader fileReader= null;
         try {
@@ -38,18 +42,27 @@ public class HostsReader {
                 while((line=bufferedReader.readLine())!=null){
                     hostsItem_currentline=getHostItem(line);
                     if(hostsItem_currentline!=null){
+                        hostsMap.add(hostsItem_currentline);
+                        domainMap.put(hostsItem_currentline.getDomain(),hostsItem_currentline.getIp());
                         hostsItemArrayList.add(hostsItem_currentline);
                     }
                 }
-                return hostsItemArrayList;
             } catch (IOException e) {
                 e.printStackTrace();
-                return null;
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-            return null;
         }
+    }
+
+    public HostsMap getHostsMap(){
+        return hostsMap;
+    }
+    public Map<String,String>getDomainMap(){
+        return domainMap;
+    }
+    public ArrayList<HostsItem>getHostsItemArrayList(){
+        return hostsItemArrayList;
     }
 
     /**
@@ -75,9 +88,5 @@ public class HostsReader {
             return null;
         }
         return new HostsItem(item[0],item[1]);
-    }
-
-    public String getHostsPath() {
-        return hostsPath;
     }
 }
