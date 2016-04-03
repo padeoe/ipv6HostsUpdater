@@ -89,4 +89,9 @@ public class HostsReader {
         }
         return new HostsItem(item[0],item[1]);
     }
+
+    public String getCurrentGoogleIP(){
+        return domainMap.get("www.google.com");
+    }
+
 }

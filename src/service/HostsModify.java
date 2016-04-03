@@ -12,7 +12,7 @@ import java.util.List;
  * Created by padeoe on 2016/3/18.
  */
 public class HostsModify {
-    private String hostsPath;
+    protected String hostsPath;
 
     public HostsModify(String hostsPath) {
         this.hostsPath = hostsPath;

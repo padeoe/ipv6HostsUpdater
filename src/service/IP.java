@@ -1,6 +1,7 @@
 package service;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.*;
 import java.util.Arrays;
 
@@ -96,7 +97,7 @@ public class IP {
             int low = address[address.length - 1] & 0xff;
             int tmp = high + low;
             builder.append(Integer.toHexString(tmp));
-            return builder.toString();
+            return builder.toString().replaceAll(":0:(0:)+","::");
         }
         return null;
 
@@ -157,6 +158,27 @@ public class IP {
             }
             return true;
         } catch (IOException ex) {
+            return false;
+        }
+    }
+
+    /**
+     * 判断一个IP是否是可以访问的Google搜索服务器的IP。通过对Google搜索服务器的一张图片的HTTP访问进行判断
+     *
+     * @return IP是否是可以访问的Google搜索服务器的IP
+     */
+    public boolean isAvailableGoogleSearchIP(int timeout) {
+        URL url ;
+        try {
+            url = new URL("http://" + this.toString() + "/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png");
+            HttpURLConnection connection = (HttpURLConnection) url
+                    .openConnection();
+            connection.setConnectTimeout(timeout);
+            connection.setReadTimeout(timeout);
+            InputStream inputStream = connection.getInputStream();
+            inputStream.close();
+            return true;
+        } catch (Exception e) {
             return false;
         }
     }

@@ -15,7 +15,7 @@ public class IPTest {
     static int problem = 0;
     static int deleted=0;
 
-    public static void testAllIP() {
+    public static List<HostsItem> testAllIP() {
         HostsReader hostsReader = new HostsReader("C:\\Windows\\System32\\drivers\\etc\\hosts");
         HostsMap hostsMap = hostsReader.getHostsMap();
         Map<String, String> domainMap = hostsReader.getDomainMap();
@@ -90,6 +90,7 @@ public class IPTest {
 
         hostsItems.forEach(hostsItem -> hostsItem.setIp(domainMap.get(hostsItem.getDomain())));
         new HostsModify("hosts").writeHostsFile(hostsItems);
+        return hostsItems;
 
 /*        new Thread() {
             @Override
@@ -115,6 +116,7 @@ public class IPTest {
 
     public static void setDNSServer(String DNSServer) {
         IPTest.DNSServer = DNSServer;
+        System.out.println("dns server set as "+DNSServer);
     }
 
     public static int getPort() {
