@@ -9,9 +9,10 @@ public class IPTest {
     static String DNSServer = "2001:4860:4860::8888";
     static int port = 443;
     static int timeout = 800;
-    static int threadNumber = 100;
+    static int threadNumber = 5;
     static int n = 0;
     static int fixed = 0;
+    static int reDNS=0;
     static int problem = 0;
     static int deleted=0;
 
@@ -51,15 +52,15 @@ public class IPTest {
                                                 problem++;
                                                 break;
                                             case 1:
-                                                domainMap.put(domain, currentIP.toString());
+                                                domainMap.put(domain, hostsItem.getIp());
+                                                reDNS++;
                                                 fixed++;
                                                 break;
                                         }
                                     }
                                 } else {
-                                    fixed++;
-                                    ArrayList<String> hostNameList = hostsMap.getHostName(testip);
-                                    for (String hostname : hostNameList) {
+                                    fixed+=hostsMap.getHostName(testip).size();
+                                    for (String hostname : hostsMap.getHostName(testip)) {
                                         domainMap.put(hostname, currentIP.toString());
                                     }
 
@@ -86,28 +87,56 @@ public class IPTest {
                 e.printStackTrace();
             }
         }
-        System.out.println("All threads complete! " + fixed + " updated," + problem + " fail,"+deleted+" deleted");
+        System.out.println("All threads complete! " + fixed + " updated,"+reDNS+" reDNS," + problem + " fail,"+deleted+" deleted");
 
         hostsItems.forEach(hostsItem -> hostsItem.setIp(domainMap.get(hostsItem.getDomain())));
         new HostsModify("hosts").writeHostsFile(hostsItems);
         return hostsItems;
+    }
 
-/*        new Thread() {
-            @Override
-            public void run() {
-                try {
-                    while (true) {
-                        current = n;
-                        Thread.sleep(10000);
-                        System.out.println("speed: " + (n - current + 1.0) / 10 + "/s");
+    public static List<HostsItem> reDNSAllIP(){
+        HostsReader hostsReader = new HostsReader("C:\\Windows\\System32\\drivers\\etc\\hosts");
+        hostsReader.getHostsItemArrayList();
+        ArrayList<HostsItem> hostsItems = hostsReader.getHostsItemArrayList();
+        ArrayList<Thread> threadArrayList = new ArrayList<>();
+        final int threadnumber = threadNumber;
+        for (int i = 0; i < threadnumber; i++) {
+            final int a = i;
+            threadArrayList.add(new Thread() {
+                @Override
+                public void run() {
+                    int id = hostsItems.size() - a;
+                    for (int j = 1; id > 0; j++) {
+                        try {
+                            HostsItem currentHostItem=hostsItems.get(id - 1);
+                            String testip = currentHostItem.getIp();
+                           // if(!IP.isReachable(testip,443,800)){
+                                currentHostItem.reDNS(getDNSServer(),getPort(),getTimeout());
+                          //  }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        n++;
+                        id = hostsItems.size() - threadnumber * j - a;
                     }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+
                 }
+            });
+        }
+
+        for (Thread thread : threadArrayList) {
+            thread.start();
+        }
+        for (Thread thread : threadArrayList) {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        }.start();*/
+        }
 
-
+        new HostsModify("hosts").writeHostsFile(hostsItems);
+        return hostsItems;
     }
 
     public static String getDNSServer() {

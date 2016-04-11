@@ -1,7 +1,9 @@
 package service;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.*;
 import java.util.Arrays;
 
@@ -104,15 +106,7 @@ public class IP {
     }
 
     public boolean isReachable(int openPort, int timeOutMillis) {
-        try {
-            try (Socket soc = new Socket()) {
-                soc.connect(new InetSocketAddress(this.toString(), openPort), timeOutMillis);
-                soc.close();
-            }
-            return true;
-        } catch (IOException ex) {
-            return false;
-        }
+        return isReachable(this.toString(),openPort,timeOutMillis);
     }
 
     public boolean equals(IP another) {
@@ -158,6 +152,39 @@ public class IP {
             }
             return true;
         } catch (IOException ex) {
+            return false;
+        }
+    }
+
+    public static boolean isReachableByPing(String ip, int openPort, int timeOutMillis) {
+        Runtime runtime = Runtime.getRuntime();
+        String[] arg = new String[]{"ping",ip, "-n", "1", "-w",String.valueOf(timeOutMillis)};
+        Process process;
+        try {
+            process = runtime.exec(arg);
+            InputStream is = process.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is, "GBK");
+            BufferedReader bf = new BufferedReader(isr);
+            String line;
+            boolean ipStart = false;
+            while ((line = bf.readLine()) != null) {
+                if (ipStart) {
+                    if(line.endsWith("(0% 丢失)，")){
+                        return true;
+                    }
+                    if(line.endsWith("(100% 丢失)，")){
+                        return false;
+                    }
+                    System.out.println(line);
+                } else {
+                    if (line.startsWith(ip)) {
+                        ipStart = true;
+                    }
+                }
+            }
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
     }
