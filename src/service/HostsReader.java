@@ -9,6 +9,7 @@ import java.util.Map;
  * This class is used to read the "hosts" file
  * Created by padeoe on 2016/3/18.
  */
+@Deprecated
 public class HostsReader {
     private HostsMap hostsMap=new HostsMap();
     private Map<String,String> domainMap=new HashMap<>();

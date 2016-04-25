@@ -16,7 +16,7 @@ public class Start {
 
     public static void updateHosts(){
         IPTest.setTimeout(800);
-        IPTest.setThreadNumber(100);
+        IPTest.setThreadNumber(30);
         String dnsserver;
         if((dnsserver=getAvailableDNS())!=null){
             IPTest.setDNSServer(dnsserver);

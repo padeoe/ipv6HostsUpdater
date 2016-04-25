@@ -125,7 +125,6 @@ public class IP {
         IP nextip = new IP(address.clone());
         for (int n = 0; n < 6; n++) {
             if ((nextip = nextip.next()).isReachable(port, timeout)) {
-                System.out.println(this + " =>" + nextip.toString());
                 this.address = nextip.address;
                 return true;
             }
@@ -134,7 +133,6 @@ public class IP {
         IP previousip = new IP(address.clone());
         for (int n = 0; n < 6; n++) {
             if ((previousip = previousip.previous()).isReachable(port, timeout)) {
-                System.out.println(this + " =>" + previousip.toString());
                 address = previousip.address;
                 return true;
             }

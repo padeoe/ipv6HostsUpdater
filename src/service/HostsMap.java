@@ -10,6 +10,8 @@ import java.util.Set;
  */
 public class HostsMap {
     private Map<String,ArrayList<String>> hostsMap=new HashMap<>();
+    HostsMap(){}
+    HostsMap(Map<String,ArrayList<String>>hostsMap){this.hostsMap=hostsMap;}
     public void add(HostsItem hostsItem){
         if(hostsItem!=null){
             if(hostsMap.containsKey(hostsItem.getIp())){

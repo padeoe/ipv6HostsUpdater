@@ -77,16 +77,14 @@ public class Updater {
                 }
             });
         }
-        for (Thread thread : threadArrayList) {
-            thread.start();
-        }
-        for (Thread thread : threadArrayList) {
+        threadArrayList.forEach(thread -> thread.start());
+        threadArrayList.forEach(thread -> {
             try {
                 thread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
+        });
         return IPSet;
     }
 }

@@ -102,7 +102,7 @@ public class HostsItem {
             return status;
         } else {
             return -1;//-1 for non-existent domain
-        }
+    }
     }
 
 }
