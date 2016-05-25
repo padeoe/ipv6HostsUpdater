@@ -10,10 +10,14 @@ import java.util.Map;
  * Created by padeoe on 2016/4/3.
  */
 public class Updater {
-    static String[]ipBlock=new String[]{"216.58.199.","66.102.1.","64.233.162.","173.252.120."};
+    static String[]ipBlock=new String[]{"216.58.200.","66.102.1.","64.233.162.","173.252.120."};
 
+    /**
+     * It will update your hosts file for ipv4 network
+     * @param args
+     */
     public static void main(String[] args) {
-        String hostsPath="D:\\My Program\\hosts Editor\\router\\hosts";
+        String hostsPath="C:\\Windows\\System32\\drivers\\etc\\hosts";
         HostsReader hostsReader=new HostsReader(hostsPath);
         String currentIP=hostsReader.getCurrentGoogleIP();
         Map<String,String>domainMap= hostsReader.getDomainMap();

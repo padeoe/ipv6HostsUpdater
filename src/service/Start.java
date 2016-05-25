@@ -14,6 +14,9 @@ public class Start {
         updateHosts();
     }
 
+    /**
+     * It will update your hosts file for ipv6 network
+     */
     public static void updateHosts(){
         IPTest.setTimeout(800);
         IPTest.setThreadNumber(30);

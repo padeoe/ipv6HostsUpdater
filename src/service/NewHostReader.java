@@ -16,9 +16,10 @@ import java.util.stream.Stream;
  */
 public class NewHostReader {
     private Map<String,List<HostsItem>>ipMap;
+    private Map<String,List<HostsItem>>domainMap;
     private List<HostsItem> hostsItemList;
     private String hostsPath;
-    NewHostReader(String hostsPath){
+    public NewHostReader(String hostsPath){
         this.hostsPath = hostsPath;
         init();
     }
@@ -32,6 +33,7 @@ public class NewHostReader {
             BufferedReader bufferedReader=new BufferedReader(new FileReader(hostsPath));
             hostsItemList=bufferedReader.lines().parallel().map(line->getHostItem(line)).filter(line->line!=null).collect(Collectors.toList());
             ipMap=hostsItemList.parallelStream().collect(Collectors.groupingBy(HostsItem::getIp));
+            domainMap=hostsItemList.parallelStream().collect(Collectors.groupingBy(HostsItem::getDomain));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -43,7 +45,9 @@ public class NewHostReader {
     public List<HostsItem>getHostsItemArrayList(){
         return hostsItemList;
     }
-
+    public Map<String,List<HostsItem>>getDomainMap(){
+        return domainMap;
+    }
     /**
      * analyse the line in hosts file by dropping comments,split ip and hostsname
      * and construct into an {@linkplain HostsItem} Object

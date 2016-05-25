@@ -89,14 +89,14 @@ public class HostsItem {
         String newip = DNS(domain, DNSServer);
         if (newip != null) {
             if (new IP(newip).isReachable(port, timeout)){
-                System.out.println(ip + " =>" + newip);
+              //  System.out.println(ip + " =>" + newip);
                 ip = newip;
                 return 1;//1 for success
             }
             IP currentip=new IP(newip);
             int status=currentip.findNearIP(port,timeout) ? 1 : 0;//0 for failure
             if(status==1){
-                System.out.println(ip + " =>" + currentip.toString());
+           //     System.out.println(ip + " =>" + currentip.toString());
             }
             ip=currentip.toString();
             return status;

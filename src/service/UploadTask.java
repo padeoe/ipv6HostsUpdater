@@ -8,16 +8,19 @@ import java.io.IOException;
 public class UploadTask {
     private String serverAddr = "padeoe.com";
     private String serverPath = "/usr/share/tomcat/webapps/ROOT/";
-    private String user = "username";
-    private String pwd = "password";
-    private String port = "port";
+    private String user = "root";
+    private String pwd = "*";
+    private String port = "*";
     private String localPath="./hosts";
 
     public static void main(String[] args) {
         new Start().updateHosts();
-        new UploadTask().uploadHosts();
+  //      new UploadTask().uploadHosts();
     }
 
+    /**
+     * upload the hosts file to padeoe.com/hosts
+     */
     public void uploadHosts() {
         System.out.println("start uploading hosts to "+serverAddr);
         String[] args = new String[]{"pscp", "-P", port, "-pw",pwd,localPath,user+"@"+serverAddr+":"+serverPath};

@@ -83,9 +83,9 @@ public class HostsReader {
         if(indexOfComment!=-1){
             hostsLine=hostsLine.substring(0,indexOfComment);
         }
-        String item[]=hostsLine.split(" ");
+        String item[]=hostsLine.split(" |\t");
         if(item.length!=2) {
-           // System.out.println("不合法的行"+hostsLine);
+            //System.out.println("不合法的行"+hostsLine);
             return null;
         }
         return new HostsItem(item[0],item[1]);

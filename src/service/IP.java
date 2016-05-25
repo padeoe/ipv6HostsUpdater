@@ -1,9 +1,6 @@
 package service;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.*;
 import java.util.Arrays;
 
@@ -193,7 +190,21 @@ public class IP {
      * @return IP是否是可以访问的Google搜索服务器的IP
      */
     public boolean isAvailableGoogleSearchIP(int timeout) {
-        URL url ;
+        byte[]a=MyHttpRequest.get(null,"http://" + this.toString() + "/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",null,"UTF-8",timeout);
+      //  System.out.println("长度"+a.length);
+        File file=new File("C:\\Users\\padeoe\\Desktop\\aaaa.gzip");
+        try {
+            BufferedOutputStream bf=new BufferedOutputStream(new FileOutputStream(file));
+            bf.write(a,0,a.length);
+            bf.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if(a==null){return false;}
+        return a.length==16384;
+/*        URL url ;
         try {
             url = new URL("http://" + this.toString() + "/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png");
             HttpURLConnection connection = (HttpURLConnection) url
@@ -205,7 +216,7 @@ public class IP {
             return true;
         } catch (Exception e) {
             return false;
-        }
+        }*/
     }
 
 }
