@@ -20,9 +20,9 @@ public class IPTest {
 
     public static List<HostsItem> testAllIP() {
         NewHostReader hostsReader = new NewHostReader("C:\\Windows\\System32\\drivers\\etc\\hosts");
-        List<HostsItem> hostsItems = hostsReader.getHostsItemArrayList();
         Map<String,List<HostsItem>>ipMap=hostsReader.getIpMap();
-
+        Map<String,HostsItem>domainMap=hostsReader.getDomainMap();
+        List<HostsItem>hostsItems=hostsReader.getHostsItemArrayList();
         String[]ipArray=ipMap.keySet().toArray(new String[ipMap.size()]);
 
         ArrayList<Thread> threadArrayList = new ArrayList<>();
@@ -44,7 +44,7 @@ public class IPTest {
                                     for (HostsItem hostsItem : hostNameList) {
                                         switch (hostsItem.reDNS(DNSServer, port, timeout)) {
                                             case -1:
-                                              //  domainMap.remove(domain);
+                                                domainMap.get(hostsItem.getDomain()).setIp(null);
                                                 System.out.println("Non-existent domain: " + hostsItem.getDomain());
                                                 deleted++;
                                                 break;
@@ -53,13 +53,14 @@ public class IPTest {
                                                 problem++;
                                                 break;
                                             case 1:
+                                                domainMap.put(hostsItem.getDomain(),hostsItem);
                                                 reDNS++;
                                                 fixed++;
                                                 break;
                                         }
                                     }
                                 } else {
-                                    ipMap.get(testip).parallelStream().forEach(hostsItem -> hostsItem.setIp(currentIP.toString()));
+                                    ipMap.get(testip).parallelStream().forEach(hostsItem -> domainMap.put(hostsItem.getDomain(),hostsItem));
                                     fixed+=ipMap.get(testip).size();
                                 }
                             }
@@ -83,7 +84,7 @@ public class IPTest {
             }
         });
         System.out.println("All threads complete! " + fixed + " updated,"+reDNS+" reDNS," + problem + " fail,"+deleted+" deleted");
-
+        hostsItems.forEach(hostsItem -> hostsItem.setIp(domainMap.get(hostsItem.getDomain()).getIp()));
         new HostsModify("hosts").writeHostsFile(hostsItems);
         return hostsItems;
     }

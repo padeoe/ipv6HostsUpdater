@@ -4,10 +4,7 @@ import service.HostsItem;
 import service.HostsModify;
 import service.NewHostReader;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -28,10 +25,9 @@ public class DomainGenerator {
      * @param newHostsFilePath
      */
     public static void addAllHosts(String masterHostsFilePath,String addedHostsFilePath,String newHostsFilePath){
-        Map<String,List<HostsItem>>domainMap=new NewHostReader(addedHostsFilePath).getDomainMap();
+        Map<String,HostsItem>domainMap=new NewHostReader(addedHostsFilePath).getDomainMap();
         domainMap.putAll(new NewHostReader(masterHostsFilePath).getDomainMap());
-        List<HostsItem>newHostItemList=domainMap.entrySet().parallelStream().flatMap(stringListEntry -> stringListEntry.getValue().stream())
-        .collect(Collectors.toList());
+        List<HostsItem>newHostItemList=domainMap.values().parallelStream().collect(Collectors.toList());
         System.out.println(newHostItemList.size());
         HostsModify hostsModify=new HostsModify(newHostsFilePath);
         hostsModify.writeHostsFile(newHostItemList);
@@ -44,7 +40,6 @@ public class DomainGenerator {
      */
     public static void completeDomainSeries(String originHostsPath,String newHostsPath){
         NewHostReader hostReader = new NewHostReader(originHostsPath);
-        Map<String, List<HostsItem>> domainMap = hostReader.getDomainMap();
         List<HostsItem> hostsItems = hostReader.getHostsItemArrayList();
         Map<String, String> patternMap = getAlldomainPattern(hostsItems);
         System.out.println(patternMap.size());

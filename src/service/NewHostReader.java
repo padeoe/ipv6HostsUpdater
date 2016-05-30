@@ -16,7 +16,7 @@ import java.util.stream.Stream;
  */
 public class NewHostReader {
     private Map<String,List<HostsItem>>ipMap;
-    private Map<String,List<HostsItem>>domainMap;
+    private Map<String,HostsItem>domainMap=new HashMap<>();
     private List<HostsItem> hostsItemList;
     private String hostsPath;
     public NewHostReader(String hostsPath){
@@ -33,7 +33,7 @@ public class NewHostReader {
             BufferedReader bufferedReader=new BufferedReader(new FileReader(hostsPath));
             hostsItemList=bufferedReader.lines().parallel().map(line->getHostItem(line)).filter(line->line!=null).collect(Collectors.toList());
             ipMap=hostsItemList.parallelStream().collect(Collectors.groupingBy(HostsItem::getIp));
-            domainMap=hostsItemList.parallelStream().collect(Collectors.groupingBy(HostsItem::getDomain));
+            hostsItemList.forEach(hostsItem -> domainMap.put(hostsItem.getDomain(),hostsItem));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -45,7 +45,7 @@ public class NewHostReader {
     public List<HostsItem>getHostsItemArrayList(){
         return hostsItemList;
     }
-    public Map<String,List<HostsItem>>getDomainMap(){
+    public Map<String,HostsItem>getDomainMap(){
         return domainMap;
     }
     /**
