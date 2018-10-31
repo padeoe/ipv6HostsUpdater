@@ -12,34 +12,6 @@ import java.util.Map;
 public class Updater {
     static String[]ipBlock=new String[]{"216.58.200.","66.102.1.","64.233.162.","173.252.120."};
 
-    /**
-     * It will update your hosts file for ipv4 network
-     * @param args
-     */
-    public static void main(String[] args) {
-        String hostsPath="C:\\Windows\\System32\\drivers\\etc\\hosts";
-        HostsReader hostsReader=new HostsReader(hostsPath);
-        String currentIP=hostsReader.getCurrentGoogleIP();
-        Map<String,String>domainMap= hostsReader.getDomainMap();
-        List<HostsItem>hostsItems=hostsReader.getHostsItemArrayList();
-        HostsMap hostsMap=hostsReader.getHostsMap();
-
-        if(!new IP(currentIP).isAvailableGoogleSearchIP(600)){
-            String newip=testAllIP(600,16);
-            if(newip!=null){
-                hostsMap.getHostName(currentIP).forEach(domain->domainMap.put(domain,newip));
-                hostsItems.forEach(hostsItem -> hostsItem.setIp(domainMap.get(hostsItem.getDomain())));
-                new HostMoidfy_v4(hostsPath).writeHostsFile(hostsItems);
-                UploadTask uploadTask=new UploadTask();
-                uploadTask.setLocalPath(hostsPath);
-                uploadTask.setServerPath("/usr/share/tomcat/webapps/ROOT/liantonghosts");
-                uploadTask.uploadHosts();
-            }
-        }
-        else{
-            System.out.println("hosts no need to update");
-        }
-    }
     public static String testAllIP(int timeout,int threadNumber){
         for(int i=0;i<ipBlock.length;i++){
             List<String> ipList=testIPBlock(ipBlock[i],timeout,threadNumber);

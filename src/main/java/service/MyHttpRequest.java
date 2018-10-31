@@ -100,21 +100,17 @@ public class MyHttpRequest {
             }
             String newCookie;
             newCookie = connection.getHeaderField("Set-Cookie");
-        //    System.out.println("cookie字段原始数据"+newCookie);
             if(newCookie!=null){
                 newCookie = newCookie.substring(0, newCookie.indexOf(";"));
             }
             connection.disconnect();
+            byte[] bytes = new byte[myByteArray.getSize()];
+            System.arraycopy(myByteArray.getBuffer(), 0, bytes, 0, bytes.length);
+
             if(newCookie!=null){
-                return new ReturnData(myByteArray.getBuffer(),newCookie);
+                return new ReturnData(bytes, newCookie);
             }
-            return new ReturnData(myByteArray.getBuffer(),null);
-        } catch (UnsupportedEncodingException e) {
-            return new ReturnData(null,null);
-        } catch (MalformedURLException malformedURLException) {
-            return new ReturnData(null,null);
-        } catch (ProtocolException protocolException) {
-            return new ReturnData(null,null);
+            return new ReturnData(bytes, null);
         } catch (IOException ioException) {
             return new ReturnData(null,null);
 

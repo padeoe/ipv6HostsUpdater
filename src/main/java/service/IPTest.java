@@ -16,10 +16,9 @@ public class IPTest {
     static int reDNS=0;
     static int problem = 0;
     static int deleted=0;
-    Date a=new Date();
 
-    public static List<HostsItem> testAllIP() {
-        NewHostReader hostsReader = new NewHostReader("C:\\Windows\\System32\\drivers\\etc\\hosts");
+    public static List<HostsItem> testAllIP(String baseHostsPath) {
+        NewHostReader hostsReader = new NewHostReader(baseHostsPath);
         Map<String,List<HostsItem>>ipMap=hostsReader.getIpMap();
         Map<String,HostsItem>domainMap=hostsReader.getDomainMap();
         List<HostsItem>hostsItems=hostsReader.getHostsItemArrayList();

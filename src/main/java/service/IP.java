@@ -191,7 +191,6 @@ public class IP {
      */
     public boolean isAvailableGoogleSearchIP(int timeout) {
         byte[]a=MyHttpRequest.get(null,"http://" + this.toString() + "/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",null,"UTF-8",timeout);
-      //  System.out.println("长度"+a.length);
         File file=new File("C:\\Users\\padeoe\\Desktop\\aaaa.gzip");
         try {
             BufferedOutputStream bf=new BufferedOutputStream(new FileOutputStream(file));
